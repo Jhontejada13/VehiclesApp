@@ -1,3 +1,4 @@
+// import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,7 +10,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   String _email = "";
+  String _emailError = "";
+  bool _emailShowErrors = false;
   String _password = "";
+  String _passwordError = "";
+  bool _passwordShowErrors = false;
   bool _remeberMe = true;
 
 
@@ -49,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: InputDecoration(
           hintText: 'Ingresa tu email ...',
           labelText: 'Email',
+          errorText: _emailShowErrors ? _emailError : null,
           suffixIcon: Icon(Icons.email),
           border: OutlineInputBorder (
             borderRadius: BorderRadius.circular(10)
@@ -69,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: InputDecoration(
           hintText: 'Ingresa tu contraseña ...',
           labelText: 'Contraseña',
+          errorText: _passwordShowErrors ? _passwordError : null,
           suffixIcon: Icon(Icons.lock),
           border: OutlineInputBorder (
             borderRadius: BorderRadius.circular(10)
@@ -109,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   }
                 ),
               ),
-              onPressed: () {}
+              onPressed: () => _login()
             ),
           ),
           SizedBox(width: 20),
@@ -129,5 +136,42 @@ class _LoginScreenState extends State<LoginScreen> {
         ]
       ),
     );
+  }
+
+  void _login() {
+    if(!_validateFields()) {
+      return;
+    }
+  }
+
+  bool _validateFields() {
+    bool hasErrors = false;
+
+    if(_email.isEmpty){
+      hasErrors = true;
+      _emailShowErrors = true;
+      _emailError = 'Debes ingresar tu email';
+    // }else if(!EmailValidator.validate(_email)){
+    //   hasErrors = true;
+    //   _emailShowErrors = true;
+    //   _emailError = 'Debes ingresar un email válido';
+    }else{
+      _emailShowErrors = false;
+    }
+
+    if(_password.isEmpty){
+      hasErrors = true;
+      _passwordShowErrors = true;
+      _passwordError = 'Debes ingresar tu contraseñal';
+    }else if(_password.length < 6){
+      hasErrors = true;
+      _passwordShowErrors = true;
+      _passwordError = 'Debes ingresar una contraseña de al menos 6 caracteres';
+    }else{
+      _passwordShowErrors = false;
+    }
+
+    setState(() { });
+    return hasErrors;
   }
 }
