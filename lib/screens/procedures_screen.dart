@@ -138,7 +138,7 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
                       Text(
                         e.description,
                         style: const TextStyle(
-                          fontSize: 16
+                          fontSize: 20
                         ),
                       ),
                       Icon(Icons.arrow_forward_ios_outlined),
