@@ -1,4 +1,5 @@
-// import 'package:email_validator/email_validator.dart';
+
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _passwordError = "";
   bool _passwordShowErrors = false;
   bool _remeberMe = true;
+  bool _passwordShow = false;
 
 
   @override
@@ -56,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
           labelText: 'Email',
           errorText: _emailShowErrors ? _emailError : null,
           suffixIcon: Icon(Icons.email),
+          prefixIcon: Icon(Icons.alternate_email),
           border: OutlineInputBorder (
             borderRadius: BorderRadius.circular(10)
           ),
@@ -71,12 +74,20 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: EdgeInsets.all(10),
       child: TextField(
-        obscureText: true,
+        obscureText: !_passwordShow,
         decoration: InputDecoration(
           hintText: 'Ingresa tu contraseña ...',
           labelText: 'Contraseña',
           errorText: _passwordShowErrors ? _passwordError : null,
-          suffixIcon: Icon(Icons.lock),
+          suffixIcon: IconButton(
+            icon:_passwordShow ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
+            onPressed: () {
+              setState(() {
+                _passwordShow = !_passwordShow;
+              });              
+            },
+          ),
+          prefixIcon: Icon(Icons.lock),
           border: OutlineInputBorder (
             borderRadius: BorderRadius.circular(10)
           ),
@@ -151,10 +162,10 @@ class _LoginScreenState extends State<LoginScreen> {
       hasErrors = true;
       _emailShowErrors = true;
       _emailError = 'Debes ingresar tu email';
-    // }else if(!EmailValidator.validate(_email)){
-    //   hasErrors = true;
-    //   _emailShowErrors = true;
-    //   _emailError = 'Debes ingresar un email válido';
+    }else if(!EmailValidator.validate(_email)){
+      hasErrors = true;
+      _emailShowErrors = true;
+      _emailError = 'Debes ingresar un email válido';
     }else{
       _emailShowErrors = false;
     }
