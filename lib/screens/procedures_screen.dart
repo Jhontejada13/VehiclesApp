@@ -22,6 +22,9 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
   List<Procedure> _procedures = [];
   bool _showLoader = false;
 
+  String _search = '';
+  bool _isFiltered = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -34,7 +37,17 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Procedimientos'),
-      ),
+        actions: <Widget>[
+          _isFiltered ? IconButton(
+            onPressed: _removeFilter,
+            icon: Icon(Icons.filter_none_outlined),
+          ) : 
+          IconButton(
+            onPressed: _showFilter,
+            icon: Icon(Icons.filter_alt_outlined),
+          )
+        ]
+      ),      
       body: Center(
         child: _showLoader ? LoaderComponent(text: 'Por favor espere ...') : _getContent(),
       ),
@@ -101,9 +114,10 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
     return Center(
       child: Container(
         margin: EdgeInsets.all(20),
-        child: const Text(
-            'No existen procedmientos almacenados',
-            style: TextStyle(
+        child: Text(_isFiltered 
+          ? 'Ningún procedimiento coincide con el criterio de búsqueda'
+          : 'No existen procedmientos registrados',
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
@@ -165,4 +179,77 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
       }).toList(),
     );
   }
+
+  void _removeFilter() {
+    setState(() {
+      _isFiltered = false;
+    });
+    _getProcedures();
+  }
+
+  void _showFilter() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10)
+          ),
+          title: const Text('Filtrar Procedimientos'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Text('Escriba las primeras letras del procedimiento'),
+              const SizedBox(height: 10,),
+              TextField(
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Criterio de búsqueda ...',
+                  labelText: 'Buscar',
+                  suffixIcon: Icon(Icons.search_outlined),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _search = value;
+                  });                  
+                }
+              )
+            ],
+          ),
+          actions: <Widget> [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () => _filter(),
+              child: Text('Filtrar'),
+            )
+          ],
+        );
+      }
+    );
+  }
+
+  void _filter() {
+    if(_search.isEmpty){
+      return;
+    }
+
+    List<Procedure> filteredList = [];
+
+    for (var procedure in _procedures) {
+      if(procedure.description.toLowerCase().contains(_search.toLowerCase())){
+        filteredList.add(procedure);
+      }
+    }
+
+    setState(() {
+      _procedures = filteredList;
+      _isFiltered = true;
+    });
+
+    Navigator.of(context).pop();
+  }
 }
+

@@ -18,7 +18,7 @@ class ProcedureScreen extends StatefulWidget {
 
 class _ProcedureScreenState extends State<ProcedureScreen> {
 
-  bool _showLoader = false;
+  bool _showLoader = false;  
 
   String _description = '';
   String _descriptionError = '';
@@ -48,7 +48,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
       appBar: AppBar(
         title: Text(
           widget.procedure.id == 0 ? 'Nuevo Procedimiento' : widget.procedure.description
-        ),
+        ),        
       ),
       body: Stack(
         children: [
@@ -144,7 +144,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
                     }
                   ),
                 ),
-                onPressed: () {}
+                onPressed: () => _confirmDelete(),
             ),
           ),
         ]
@@ -191,10 +191,6 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
   }
 
   _addRecord() async{
-    
-  }
-
-  _saveRecord() async {
     setState(() {
       _showLoader = true;
     });
@@ -204,10 +200,105 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
       'price' : double.parse(_price)
     };
 
+    Response response = await ApiHelper.post(
+      '/api/Procedures/',
+      request,
+      widget.token.token 
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if(!response.isSucces){
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          const AlertDialogAction(
+            key: null,
+            label: 'Aceptar'
+          ),
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context);
+  }
+
+  _saveRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    Map<String, dynamic> request = {
+      'id': widget.procedure.id,
+      'description': _description,
+      'price' : double.parse(_price)
+    };
+
     Response response = await ApiHelper.put(
       '/api/Procedures/',
       widget.procedure.id.toString(),
       request,
+      widget.token.token 
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if(!response.isSucces){
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          const AlertDialogAction(
+            key: null,
+            label: 'Aceptar'
+          ),
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context);
+  }
+
+  _confirmDelete() async {
+    var response = await showAlertDialog(
+      context: context,
+      title: 'Conrmación',
+      message: '¿Estás seguro de borrar el registro?',
+      actions: <AlertDialogAction>[
+        const AlertDialogAction(
+          key: 'no',
+          label: 'No'
+        ),
+        const AlertDialogAction(
+          key: 'yes',
+          label: 'Si'
+        ),
+      ]
+    );
+
+    if(response == 'yes'){
+      _deleteRecord();
+    }
+
+  }
+
+  void _deleteRecord() async{
+    setState(() {
+      _showLoader = true;
+    });
+
+    Response response = await ApiHelper.delete(
+      '/api/Procedures/',
+      widget.procedure.id.toString(),
       widget.token.token 
     );
 
