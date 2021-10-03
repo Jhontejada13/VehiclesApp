@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vehicles_app/models/token.dart';
+import 'package:vehicles_app/screens/brand_screen.dart';
+import 'package:vehicles_app/screens/brands_screen.dart';
 import 'package:vehicles_app/screens/login_screen.dart';
 import 'package:vehicles_app/screens/procedures_screen.dart';
 
@@ -67,7 +69,14 @@ Widget _getBody() {
           ListTile(
             leading: Icon(Icons.two_wheeler_outlined),
             title: const Text('Marcas'),
-            onTap: () {}
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BrandsScreen(token: widget.token)
+                )
+              );
+            }
           ),
           ListTile(
             leading: Icon(Icons.precision_manufacturing_outlined),
