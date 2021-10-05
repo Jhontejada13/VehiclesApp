@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:vehicles_app/models/brand.dart';
+import 'package:vehicles_app/models/document_type.dart';
 import 'package:vehicles_app/models/procedure.dart';
 import 'package:vehicles_app/models/response.dart';
+import 'package:vehicles_app/models/vehicle_type.dart';
 
 import 'constants.dart';
 import 'package:http/http.dart' as http;
@@ -120,4 +122,61 @@ class ApiHelper {
 
     return Response(isSucces: true, result: list);
   }
+
+  static Future<Response> getDocumentTypes(String token) async {
+    var url = Uri.parse('${Constants.apiUrl}/api/DocumentTypes');
+    var response = await http.get(
+      url,
+      headers: {
+        'content-type' : 'application/json',
+        'accept' : 'application/json',
+        'authorization': 'bearer $token'
+      }
+    );
+
+    var body = response.body;
+
+    if(response.statusCode >= 400){
+      return Response(isSucces: false, message: body);
+    }
+
+    List<DocumentType> list = [];
+    var decodedJson = jsonDecode(body);
+    if(decodedJson != null) {
+      for (var item in decodedJson) {
+        list.add(DocumentType.fromJson(item));
+      }
+    }
+
+    return Response(isSucces: true, result: list);
+  }
+
+  static Future<Response> getVehicleTypes(String token) async {
+    var url = Uri.parse('${Constants.apiUrl}/api/VehicleTypes');
+    var response = await http.get(
+      url,
+      headers: {
+        'content-type' : 'application/json',
+        'accept' : 'application/json',
+        'authorization': 'bearer $token'
+      }
+    );
+
+    var body = response.body;
+
+    if(response.statusCode >= 400){
+      return Response(isSucces: false, message: body);
+    }
+
+    List<VehicleType> list = [];
+    var decodedJson = jsonDecode(body);
+    if(decodedJson != null) {
+      for (var item in decodedJson) {
+        list.add(VehicleType.fromJson(item));
+      }
+    }
+
+    return Response(isSucces: true, result: list);
+  }
+  
 }

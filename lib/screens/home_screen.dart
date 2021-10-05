@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:vehicles_app/models/token.dart';
 import 'package:vehicles_app/screens/brand_screen.dart';
 import 'package:vehicles_app/screens/brands_screen.dart';
+import 'package:vehicles_app/screens/document_types_screen.dart';
 import 'package:vehicles_app/screens/login_screen.dart';
 import 'package:vehicles_app/screens/procedures_screen.dart';
+import 'package:vehicles_app/screens/vehicle_types_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Token token;
@@ -93,12 +95,26 @@ Widget _getBody() {
           ListTile(
             leading: Icon(Icons.badge_outlined),
             title: const Text('Tipos de documento'),
-            onTap: () {}
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DocumentTypesScreen(token: widget.token)
+                )
+              );
+            }
           ),
           ListTile(
             leading: Icon(Icons.toys_outlined),
             title: const Text('Tipos de vehículo'),
-            onTap: () {}
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VehicleTypesScreen(token: widget.token)
+                )
+              );
+            }
           ),
           ListTile(
             leading: Icon(Icons.people_alt_outlined),
