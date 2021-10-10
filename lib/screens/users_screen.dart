@@ -1,23 +1,25 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:adaptive_dialog/adaptive_dialog.dart';
+
 import 'package:vehicles_app/components/loader_component.dart';
 import 'package:vehicles_app/helpers/api_helper.dart';
 import 'package:vehicles_app/models/document_type.dart';
 import 'package:vehicles_app/models/response.dart';
 import 'package:vehicles_app/models/token.dart';
-import 'package:vehicles_app/screens/document_type_screen.dart';
+import 'package:vehicles_app/models/user.dart';
+import 'package:vehicles_app/screens/user_screen.dart';
 
-class DocumentTypesScreen extends StatefulWidget {
+class UsersScreen extends StatefulWidget {
   final Token token;
 
-  DocumentTypesScreen({required this.token});
+  UsersScreen({required this.token});
 
   @override
-  _DocumentTypesScreenState createState() => _DocumentTypesScreenState();
+  _UsersScreenState createState() => _UsersScreenState();
 }
 
-class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
-  List<DocumentType> _documentTypes = [];
+class _UsersScreenState extends State<UsersScreen> {
+  List<User> _users = [];
   bool _showLoader = false;
 
   String _search = '';
@@ -26,14 +28,14 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
   @override
   void initState() {
     super.initState();
-    _getDocumentTypes();
+    _getUsers();
   }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tipos de documento'),
+        title: const Text('Usuarios'),
         actions: <Widget>[
           _isFiltered ? IconButton(
             onPressed: _removeFilter,
@@ -55,13 +57,13 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
     );
   }
 
-  Future<Null> _getDocumentTypes() async {
+  Future<Null> _getUsers() async {
 
     setState(() {
       _showLoader = true;
     });
 
-    Response response = await ApiHelper.getDocumentTypes(widget.token.token);
+    Response response = await ApiHelper.getUsers(widget.token.token);
 
     setState(() {
       _showLoader = false;
@@ -83,12 +85,14 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
     }
 
     setState(() {
-     _documentTypes = response.result;
+     _users = response.result;
     });
+
+
   }
 
   Widget _getContent() {
-    return _documentTypes.length == 0 ? _noContent() : _getListView();
+    return _users.length == 0 ? _noContent() : _getListView();
   }
 
   Widget _noContent() {
@@ -96,8 +100,8 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
       child: Container(
         margin: EdgeInsets.all(20),
         child: Text(_isFiltered 
-          ? 'Ningún tipo de documento coincide con el criterio de búsqueda'
-          : 'No existen Tipos de documento registrados',
+          ? 'Ningún usuario coincide con el criterio de búsqueda'
+          : 'No existen Usuarios registrados',
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -110,29 +114,65 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
 
   _getListView() {
     return RefreshIndicator(
-      onRefresh: _getDocumentTypes,
+      onRefresh: _getUsers,
       child: ListView(
-        children: _documentTypes.map((e) {
+        children: _users.map((e) {
           return Card(          
             child: InkWell(
               onTap: () => _goEdit(e),
               child: Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(5),
-                child: Column(
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          e.description,
-                          style: const TextStyle(
-                            fontSize: 20
-                          ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(40),
+                      child: FadeInImage(
+                        placeholder: AssetImage('assets/LogoTaller.png'), 
+                        image: NetworkImage(e.imageFullPath),
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    e.fullName,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    e.email,
+                                    style: const TextStyle(
+                                      fontSize: 15
+                                    ),
+                                  ),
+                                  SizedBox(height: 3),
+                                  Text(
+                                    e.phoneNumber,
+                                    style: const TextStyle(
+                                      fontSize: 15
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        Icon(Icons.arrow_forward_ios_outlined),
-                      ],
-                    ),               
+                      ),
+                    ),
+                    Icon(Icons.arrow_forward_ios_outlined),
                   ],
                 ),
               )
@@ -147,7 +187,7 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
     setState(() {
       _isFiltered = false;
     });
-    _getDocumentTypes();
+    _getUsers();
   }
 
   void _showFilter() {
@@ -158,11 +198,11 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10)
           ),
-          title: const Text('Filtrar Tipos de documento'),
+          title: const Text('Filtrar Usuarios'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const Text('Escriba las primeras letras del tipo de documento'),
+              const Text('Escriba las primeras letras del nombre o apellido del usuario'),
               const SizedBox(height: 10,),
               TextField(
                 autofocus: true,
@@ -199,16 +239,16 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
       return;
     }
 
-    List<DocumentType> filteredList = [];
+    List<User> filteredList = [];
 
-    for (var brand in _documentTypes) {
-      if(brand.description.toLowerCase().contains(_search.toLowerCase())){
-        filteredList.add(brand);
+    for (var user in _users) {
+      if(user.fullName.toLowerCase().contains(_search.toLowerCase())){
+        filteredList.add(user);
       }
     }
 
     setState(() {
-      _documentTypes = filteredList;
+      _users = filteredList;
       _isFiltered = true;
     });
 
@@ -219,34 +259,47 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
     String? result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DocumentTypeScreen(
+        builder: (context) => UserScreen(
           token: widget.token,
-          document_type: DocumentType(
-            description: '',
-            id: 0,
+          user: User(
+            firstName: '', 
+            lastName: '', 
+            documentType: DocumentType(id: 0, description: ''), 
+            document: '', 
+            address: '', 
+            imageId: '', 
+            imageFullPath: '', 
+            userType: 1, 
+            fullName: '', 
+            vehicles: [], 
+            vehiclesCount: 0, 
+            id: '', 
+            userName: '', 
+            email: '', 
+            phoneNumber: ''
           ),
         ) 
       )
     );
 
     if(result == 'yes'){
-      _getDocumentTypes();
+      _getUsers();
     }
   }
 
-  void _goEdit(DocumentType documentType) async {
+  void _goEdit(User user) async {
     String? result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DocumentTypeScreen(
+        builder: (context) => UserScreen(
           token: widget.token,
-          document_type: documentType
+          user: user
         ) 
       )
     );
 
     if(result == 'yes'){
-      _getDocumentTypes();
+      _getUsers();
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:vehicles_app/models/brand.dart';
 import 'package:vehicles_app/models/document_type.dart';
 import 'package:vehicles_app/models/procedure.dart';
 import 'package:vehicles_app/models/response.dart';
+import 'package:vehicles_app/models/user.dart';
 import 'package:vehicles_app/models/vehicle_type.dart';
 
 import 'constants.dart';
@@ -173,6 +174,34 @@ class ApiHelper {
     if(decodedJson != null) {
       for (var item in decodedJson) {
         list.add(VehicleType.fromJson(item));
+      }
+    }
+
+    return Response(isSucces: true, result: list);
+  }
+
+  static Future<Response> getUsers(String token) async {
+    var url = Uri.parse('${Constants.apiUrl}/api/Users');
+    var response = await http.get(
+      url,
+      headers: {
+        'content-type' : 'application/json',
+        'accept' : 'application/json',
+        'authorization': 'bearer $token'
+      }
+    );
+
+    var body = response.body;
+
+    if(response.statusCode >= 400){
+      return Response(isSucces: false, message: body);
+    }
+
+    List<User> list = [];
+    var decodedJson = jsonDecode(body);
+    if(decodedJson != null) {
+      for (var item in decodedJson) {
+        list.add(User.fromJson(item));
       }
     }
 
