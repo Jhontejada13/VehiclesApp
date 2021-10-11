@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:camera/camera.dart';
 import 'package:email_validator/email_validator.dart';
@@ -23,7 +25,10 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
 
-  bool _showLoader = false;  
+  bool _showLoader = false;
+  bool _photoChanged = false;
+  late XFile _image;
+
 
   String _firstName = '';
   String _firstNameError = '';
@@ -401,24 +406,54 @@ class _UserScreenState extends State<UserScreen> {
   Widget _showPhoto() {
     return InkWell(
       onTap: () => _takePicture(),
-      child: Container(
-        margin: const EdgeInsets.only(top: 10),
-        child: widget.user.id.isEmpty ? 
-          const Image(
-            image: AssetImage('assets/no-image.png'),
-             width: 160,
-            height: 160,
-          ) 
-          : ClipRRect(    
-            borderRadius: BorderRadius.circular(80),
-            child: FadeInImage(
-              placeholder: const AssetImage('assets/LogoTaller.png'), 
-              image: NetworkImage(widget.user.imageFullPath),
+      child: Stack(
+        children: <Widget>[
+          Container(
+          margin: const EdgeInsets.only(top: 10),
+          child: widget.user.id.isEmpty && !_photoChanged ? 
+            const Image(
+              image: AssetImage('assets/no-image.png'),
               width: 160,
               height: 160,
               fit: BoxFit.cover
+            ) 
+            : ClipRRect(    
+              borderRadius: BorderRadius.circular(80),
+              child: _photoChanged ? 
+                Image.file(
+                  File(_image.path),
+                  height: 160,
+                  width: 160,
+                  fit: BoxFit.cover
+                )
+                : FadeInImage(
+                  placeholder: const AssetImage('assets/LogoTaller.png'), 
+                  image: NetworkImage(widget.user.imageFullPath),
+                  width: 160,
+                  height: 160,
+                  fit: BoxFit.cover
+                ),
             ),
           ),
+          Positioned(
+            bottom: 0,
+            left: 100,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                color: Colors.grey[200],
+                height: 60,
+                width: 60,
+                child: Icon(
+                  Icons.photo_camera_outlined,
+                  size: 40,
+                  color: Colors.blue[300]
+                ),
+              )
+            ),
+          )
+        ]
+        
       ),
     );
   }
@@ -609,11 +644,17 @@ class _UserScreenState extends State<UserScreen> {
     WidgetsFlutterBinding.ensureInitialized();
     final cameras = await availableCameras();
     final firstCamera = cameras.first;
-    Navigator.push(
+    Response? response = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => TakePictureScreen(camera: firstCamera)
       )
     );
+    if(response != null) {
+      setState(() {
+        _photoChanged = true;
+        _image = response.result;
+      });
+    }
   }
 }
