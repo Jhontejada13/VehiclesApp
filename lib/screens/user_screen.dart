@@ -7,6 +7,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:vehicles_app/components/loader_component.dart';
 import 'package:vehicles_app/helpers/api_helper.dart';
 import 'package:vehicles_app/models/document_type.dart';
@@ -485,40 +486,40 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Widget _showPhoto() {
-    return InkWell(
-      onTap: () => _takePicture(),
-      child: Stack(
-        children: <Widget>[
-          Container(
-          margin: const EdgeInsets.only(top: 10),
-          child: widget.user.id.isEmpty && !_photoChanged ? 
-            const Image(
-              image: AssetImage('assets/no-image.png'),
-              width: 160,
-              height: 160,
-              fit: BoxFit.cover
-            ) 
-            : ClipRRect(    
-              borderRadius: BorderRadius.circular(80),
-              child: _photoChanged ? 
-                Image.file(
-                  File(_image.path),
-                  height: 160,
-                  width: 160,
-                  fit: BoxFit.cover
-                )
-                : FadeInImage(
-                  placeholder: const AssetImage('assets/LogoTaller.png'), 
-                  image: NetworkImage(widget.user.imageFullPath),
-                  width: 160,
-                  height: 160,
-                  fit: BoxFit.cover
-                ),
-            ),
+    return Stack(
+      children: <Widget>[
+        Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: widget.user.id.isEmpty && !_photoChanged ? 
+          const Image(
+            image: AssetImage('assets/no-image.png'),
+            width: 160,
+            height: 160,
+            fit: BoxFit.cover
+          ) 
+          : ClipRRect(    
+            borderRadius: BorderRadius.circular(80),
+            child: _photoChanged ? 
+              Image.file(
+                File(_image.path),
+                height: 160,
+                width: 160,
+                fit: BoxFit.cover
+              )
+              : FadeInImage(
+                placeholder: const AssetImage('assets/LogoTaller.png'), 
+                image: NetworkImage(widget.user.imageFullPath),
+                width: 160,
+                height: 160,
+                fit: BoxFit.cover
+              ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 100,
+        ),
+        Positioned(
+          bottom: 0,
+          left: 100,
+          child: InkWell(
+            onTap: () => _takePicture(),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Container(
@@ -532,10 +533,30 @@ class _UserScreenState extends State<UserScreen> {
                 ),
               )
             ),
-          )
-        ]
-        
-      ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          child: InkWell(
+            onTap: () => _selectPicture(),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                color: Colors.grey[200],
+                height: 60,
+                width: 60,
+                child: Icon(
+                  Icons.image_outlined,
+                  size: 40,
+                  color: Colors.blue[300]
+                ),
+              )
+            ),
+          ),
+        )
+      ]
+      
     );
   }
 
@@ -758,6 +779,19 @@ class _UserScreenState extends State<UserScreen> {
         _photoChanged = true;
         _image = response.result;
       });
+    }
+  }
+
+  void _selectPicture() async {
+    final ImagePicker _picker = ImagePicker(); 
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery
+    );
+    if(image != null) {
+      setState(() {
+        _photoChanged = true;
+        _image = image;
+      });       
     }
   }
 }
