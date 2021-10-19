@@ -1,4 +1,5 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -63,6 +64,27 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
     setState(() {
       _showLoader = true;
     });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if(connectivityResult == ConnectivityResult.none){
+      setState(() {
+      _showLoader = false;
+    });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet',
+        actions: <AlertDialogAction>[
+          const AlertDialogAction(
+            key: null,
+            label: 'Aceptar'
+          ),
+        ]
+      );
+      return;
+    }
 
     Response response = await ApiHelper.getProcedures(widget.token.token);
 
