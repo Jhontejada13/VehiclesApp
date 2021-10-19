@@ -36,7 +36,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tomar Foto'),
+        title: const Text('Tomar Foto'),
       ),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
@@ -46,14 +46,14 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
               _controller,
             );
           }else{
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.camera_alt_outlined),
+        child: const Icon(Icons.camera_alt_outlined),
         onPressed: () async {
           try {
             await _initializeControllerFuture;

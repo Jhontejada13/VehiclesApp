@@ -18,7 +18,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vista previa de tu foto'),
+        title: const Text('Vista previa de tu foto'),
       ),
       body: Column(
         children: [
@@ -28,16 +28,16 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
             fit: BoxFit.cover            
           ),
           Container(
-            margin: EdgeInsets.all(10),
+            margin: const EdgeInsets.all(10),
             child: Row(
               children: <Widget> [
                 Expanded(
                   child: ElevatedButton(
-                    child: Text('Usar Foto'),
+                    child: const Text('Usar Foto'),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
-                          return Color(0xFF207398);
+                          return const Color(0xFF207398);
                         }
                       ),
                     ),
@@ -47,14 +47,14 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                     }
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    child: Text('Volver a tomar'),
+                    child: const Text('Volver a tomar'),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
-                          return Color(0xFFE03B8B);
+                          return const Color(0xFFE03B8B);
                         }
                       ),
                     ),

@@ -7,6 +7,7 @@ import 'package:vehicles_app/models/document_type.dart';
 import 'package:vehicles_app/models/response.dart';
 import 'package:vehicles_app/models/token.dart';
 import 'package:vehicles_app/models/user.dart';
+import 'package:vehicles_app/screens/user_info_screen.dart';
 import 'package:vehicles_app/screens/user_screen.dart';
 
 class UsersScreen extends StatefulWidget {
@@ -119,7 +120,7 @@ class _UsersScreenState extends State<UsersScreen> {
         children: _users.map((e) {
           return Card(          
             child: InkWell(
-              onTap: () => _goEdit(e),
+              onTap: () => _goInfoUser(e),
               child: Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(5),
@@ -287,11 +288,11 @@ class _UsersScreenState extends State<UsersScreen> {
     }
   }
 
-  void _goEdit(User user) async {
+  void _goInfoUser(User user) async {
     String? result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UserScreen(
+        builder: (context) => UserInfoScreen(
           token: widget.token,
           user: user
         ) 

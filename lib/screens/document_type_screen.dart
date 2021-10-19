@@ -79,17 +79,17 @@ class _DocumentTypeScreenState extends State<DocumentTypeScreen> {
 
   Widget _showButtons() {
     return Container(
-      margin: EdgeInsets.only(left: 10, right: 10),
+      margin: const EdgeInsets.only(left: 10, right: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Expanded(
             child: ElevatedButton(
-              child: Text('Guadar'),
+              child: const Text('Guadar'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith<Color>(
                   (Set<MaterialState> states) {
-                    return Color(0xFF207398);
+                    return const Color(0xFF207398);
                   }
                 ),
               ),
